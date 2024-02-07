@@ -1,9 +1,9 @@
 namespace imdb.Models;
 
-public class UserFavoriteMovie {
-    int Id { get; set; }
-    int UserId { get; set; }
-    int MovieId { get; set; }
-    User User { get; set; }
-    Movie Movie { get; set; }
+public class UserFavoriteMovie
+{
+    public int UserId { get; set; }
+    public int MovieId { get; set; }
+    public User User { get; set; }
+    public Movie Movie { get; set; }
 }
