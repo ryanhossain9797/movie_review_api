@@ -27,4 +27,13 @@ public class UserService : IUserService
                     .Where(u => ids.Contains(u.Id))
                     .ToListAsync();
     }
+
+    public IQueryable<Movie> GetFavoriteMoviesOfUser(int id)
+    {
+        return
+            _userRepository
+            .GetUsers()
+            .Where(u => u.Id == id)
+            .SelectMany(u => u.FavoritedMovies.Select(fm => fm.Movie));
+    }
 }

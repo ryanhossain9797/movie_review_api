@@ -6,10 +6,12 @@ namespace imdb
     public class Seed
     {
         private readonly DataContext dataContext;
+
         public Seed(DataContext context)
         {
             this.dataContext = context;
         }
+
         public void SeedDataContext()
         {
             if (!dataContext.UserFavoriteMovies.Any())
@@ -39,7 +41,8 @@ namespace imdb
                         {
                             Name = "Do androids dream of elecric sheep"
                         }
-                    }               };
+                    }
+                };
                 dataContext.UserFavoriteMovies.AddRange(favorites);
                 dataContext.SaveChanges();
             }

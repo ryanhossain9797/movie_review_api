@@ -29,6 +29,6 @@ public class MovieController : Controller
         if(movie is null)
             return NotFound();
 
-        return Ok(movie);
+        return Ok(movie.ToDto());
     }
 }
