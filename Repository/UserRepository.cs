@@ -13,8 +13,13 @@ public class UserRepository : IUserRepository
         _dataCotext = dataContext;
     }
 
-    public IEnumerable<User> GetUsers()
+    public async Task<User?> GetUserById(int id)
     {
-        return _dataCotext.Users.AsEnumerable();
+        return await _dataCotext.Users.FindAsync(id);
+    }
+
+    public IQueryable<User> GetUsers()
+    {
+        return _dataCotext.Users.AsQueryable();
     }
 }

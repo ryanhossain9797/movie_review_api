@@ -3,5 +3,6 @@ namespace imdb.Repository;
 using imdb.Models;
 
 public interface IUserRepository {
-    IEnumerable<User> GetUsers();
+    Task<User?> GetUserById(int id);
+    IQueryable<User> GetUsers();
 }

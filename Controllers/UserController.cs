@@ -1,29 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
 using imdb.Repository;
 using imdb.Models;
+using imdb.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace imdb.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class UserController : Controller {
-    
-    private readonly IUserRepository _userRepository;
-     
-    public UserController(IUserRepository userRepository)
+
+    private readonly IUserService _userService;
+
+    public UserController(IUserService userService)
     {
-        _userRepository = userRepository;
+        _userService = userService;
     }
     
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-    public IActionResult GetUsers()
+    public async Task<IActionResult> GetUser(int id)
     {
-        var users = _userRepository.GetUsers().ToList();
+        var user = await _userService.GetUserById(id);
         
         if(!ModelState.IsValid)
             return BadRequest(ModelState);
         
-        return Ok(users);
+        if(user is null)
+            return NotFound();
+
+        return Ok(user);
     }
 }

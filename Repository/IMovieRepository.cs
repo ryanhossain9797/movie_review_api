@@ -3,5 +3,6 @@ using imdb.Models;
 namespace imdb.Repository;
 
 public interface IMovieRepository {
-    IEnumerable<Movie> GetMovies();
+    Task<Movie?> GetMovieById(int id);
+    IQueryable<Movie> GetMovies();
 }

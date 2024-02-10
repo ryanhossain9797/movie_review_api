@@ -12,8 +12,13 @@ public class MovieRepository : IMovieRepository
         _dataCotext = dataContext;
     }
 
-    public IEnumerable<Movie> GetMovies()
+    public async Task<Movie?> GetMovieById(int id)
     {
-        return _dataCotext.Movies.AsEnumerable();
+        return await _dataCotext.Movies.FindAsync(id);
+    }
+
+    public IQueryable<Movie> GetMovies()
+    {
+        return _dataCotext.Movies.AsQueryable();
     }
 }
