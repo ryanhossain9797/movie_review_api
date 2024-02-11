@@ -1,3 +1,4 @@
+using AutoMapper;
 using imdb.Models;
 using imdb.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ public class UserService : IUserService
     public UserService(IUserRepository userRepository)
     {
         _userRepository = userRepository;
+
     }
 
     public async Task<User?> GetUserById(int id)

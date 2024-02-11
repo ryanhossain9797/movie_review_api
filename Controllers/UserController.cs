@@ -1,3 +1,5 @@
+using System.Net;
+using AutoMapper;
 using imdb.Dto;
 using Microsoft.AspNetCore.Mvc;
 using imdb.Repository;
@@ -11,15 +13,20 @@ namespace imdb.Controllers;
 [ApiController]
 public class UserController : Controller
 {
+    private readonly IMapper _mapper;
+
     private readonly IUserService _userService;
 
-    public UserController(IUserService userService)
+    public UserController(IMapper mapper, IUserService userService)
     {
+        _mapper = mapper;
         _userService = userService;
     }
 
-    [HttpGet("Id")]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
+    [HttpGet("{id}")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserDto))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetUser(int id)
     {
         var user = await _userService.GetUserById(id);
@@ -30,23 +37,29 @@ public class UserController : Controller
         if (user is null)
             return NotFound();
 
-        return Ok(user.ToDto());
+        var userDto = _mapper.Map<UserDto>(user);
+
+        return Ok(userDto);
     }
 
-    [HttpGet("FavoriteMovies")]
-    [ProducesResponseType(200, Type = typeof(IEnumerable<Movie>))]
-    public async Task<IActionResult> GetFavoriteMoviesOfUser(int id)
+    [HttpGet("{userId}/favorite-movies")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FavoriteMoviesOfUserDto))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> GetFavoriteMoviesOfUser(int userId)
     {
-        var movies = await _userService.GetFavoriteMoviesOfUser(id).ToListAsync();
+        if (await _userService.GetUserById(userId) is null)
+            return NotFound();
+
+        var movies = await _userService.GetFavoriteMoviesOfUser(userId).ToListAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var data =
-            new FavoriteMoviesOfUserDto()
+            new FavoriteMoviesOfUserDto
             {
-                UserId = id,
-                FavoriteMovies = movies.Select(m => m.ToDto()).ToList()
+                UserId = userId,
+                FavoriteMovies = _mapper.Map<List<MovieDto>>(movies)
             };
 
         return Ok(data);
