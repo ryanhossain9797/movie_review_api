@@ -4,3 +4,8 @@ CREATE TABLE [dbo].[Users] (
     [Email]                                            NVARCHAR (400)          NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC)
 )
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_User_Email]
+    ON [dbo].[Users]([Email] ASC);
+GO

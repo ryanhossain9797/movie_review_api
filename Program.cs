@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -57,10 +57,8 @@ static void SeedData(IHost app)
 {
     var scopedFactory = app.Services.GetService<IServiceScopeFactory>()!;
 
-    using (var scope = scopedFactory.CreateScope())
-    {
-        var service = scope.ServiceProvider.GetService<Seed>()!;
-        service.SeedDataContext();
-    }
-
+    using var scope = scopedFactory.CreateScope();
+    
+    var service = scope.ServiceProvider.GetService<Seed>()!;
+    service.SeedDataContext();
 }

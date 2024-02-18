@@ -26,4 +26,16 @@ public class MovieService: IMovieService {
             .Where(u => ids.Contains(u.Id))
             .ToListAsync();
     }
+
+    public IQueryable<Movie> GetMovies()
+    {
+        return
+            _movieRepository
+            .GetMovies();
+    }
+
+    public Task<bool> CreateMovie(Movie movie)
+    {
+        return _movieRepository.CreateMovie(movie);
+    }
 }

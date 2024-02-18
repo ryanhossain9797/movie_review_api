@@ -42,4 +42,31 @@ public class MovieController : Controller
 
         return Ok(movieDto);
     }
+
+    [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<IActionResult> CreateMovie([FromBody] MovieDto? movieDto)
+    {
+        try
+        {
+            if (movieDto is null)
+                ModelState.AddModelError("", "Required data not submitted");
+
+            var movie = _mapper.Map<Movie>(movieDto);
+
+            if (await _movieService.CreateMovie(movie) is false)
+                ModelState.AddModelError("", "Movie could not be created");
+
+            if (ModelState.IsValid is false)
+                return BadRequest(ModelState);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.ToString());
+        }
+    }
 }

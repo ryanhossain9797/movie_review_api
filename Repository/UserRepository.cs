@@ -22,4 +22,18 @@ public class UserRepository : IUserRepository
     {
         return _dataCotext.Users.AsQueryable();
     }
+
+    public async Task<bool> CreateUser(User user)
+    {
+        _dataCotext.Add(user);
+
+        return await _dataCotext.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> UpdateUser(User user)
+    {
+        _dataCotext.Update(user);
+
+        return await _dataCotext.SaveChangesAsync() > 0;
+    }
 }

@@ -20,14 +20,19 @@ public class UserService : IUserService
         return await _userRepository.GetUserById(id);
     }
 
-    public async Task<ICollection<User>> GetUsersByIds(ICollection<int> ids)
+    public IQueryable<User> GetUsersByIds(ICollection<int> ids)
     {
         return
-            await
-                _userRepository
-                    .GetUsers()
-                    .Where(u => ids.Contains(u.Id))
-                    .ToListAsync();
+            _userRepository
+                .GetUsers()
+                .Where(u => ids.Contains(u.Id));
+    }
+
+    public IQueryable<User> GetUsers()
+    {
+        return
+            _userRepository
+            .GetUsers();
     }
 
     public IQueryable<Movie> GetFavoriteMoviesOfUser(int id)
@@ -37,5 +42,29 @@ public class UserService : IUserService
             .GetUsers()
             .Where(u => u.Id == id)
             .SelectMany(u => u.FavoritedMovies.Select(fm => fm.Movie));
+    }
+
+    public Task<bool> CreateUser(User user)
+    {
+        return _userRepository.CreateUser(user);
+    }
+
+    public async Task<bool> FavoriteMovie(int userId, int movieId)
+    {
+        var user =
+            (await
+                GetUsersByIds(new List<int>(userId))
+                .Include(u => u.FavoritedMovies)
+                .ToListAsync()).FirstOrDefault();
+
+        if(user is null)
+            throw new Exception("User Not Found");
+
+        if(user.FavoritedMovies.Any(ufm => ufm.MovieId == movieId))
+            return true;
+
+        user.FavoritedMovies.Add(new() { UserId = userId, MovieId = movieId});
+
+        return await _userRepository.UpdateUser(user);
     }
 }

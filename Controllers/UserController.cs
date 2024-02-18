@@ -64,4 +64,59 @@ public class UserController : Controller
 
         return Ok(data);
     }
+
+    [HttpPost("{userId}/favorite-movies/add")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(String))]
+    public async Task<IActionResult> FavoriteMovie(int userId, int movieId)
+    {
+        try
+        {
+            if (await _userService.FavoriteMovie(userId, movieId) is false)
+                return BadRequest();
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.ToString());
+        }
+    }
+
+    [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<IActionResult> CreateUser([FromBody] UserDto? userDto)
+    {
+        try
+        {
+            if (userDto is null)
+                ModelState.AddModelError("", "Required data not submitted");
+
+            var maybeExistingUser =
+                await
+                    _userService
+                    .GetUsers()
+                    .Where(usr => usr.Email == userDto.Email)
+                    .FirstOrDefaultAsync();
+
+            if (maybeExistingUser is not null)
+                ModelState.AddModelError("", "User with email already exists");
+
+            var user = _mapper.Map<User>(userDto);
+
+            if (await _userService.CreateUser(user) is false)
+                ModelState.AddModelError("", "User could not be created");
+
+            if (ModelState.IsValid is false)
+                return BadRequest(ModelState);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.ToString());
+        }
+    }
 }

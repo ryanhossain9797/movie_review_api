@@ -21,4 +21,11 @@ public class MovieRepository : IMovieRepository
     {
         return _dataCotext.Movies.AsQueryable();
     }
+
+    public async Task<bool> CreateMovie(Movie movie)
+    {
+        _dataCotext.Add(movie);
+
+        return await _dataCotext.SaveChangesAsync() > 0;
+    }
 }
