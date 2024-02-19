@@ -23,6 +23,21 @@ public class UserController : Controller
         _userService = userService;
     }
 
+    [HttpGet("Take/{limit}")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<UserDto>))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> GetAllUsers(int limit)
+    {
+        var users = await _userService.GetUsers().Include(u => u.FavoritedMovies).Take(limit).ToListAsync();
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var userDtos = _mapper.Map<List<UserDto>>(users);
+
+        return Ok(userDtos);
+    }
+
     [HttpGet("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserDto))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -65,8 +80,8 @@ public class UserController : Controller
         return Ok(data);
     }
 
-    [HttpPost("{userId}/favorite-movies/add")]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [HttpPut("{userId}/favorite-movies/add")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(String))]
     public async Task<IActionResult> FavoriteMovie(int userId, int movieId)
     {
@@ -75,7 +90,7 @@ public class UserController : Controller
             if (await _userService.FavoriteMovie(userId, movieId) is false)
                 return BadRequest();
 
-            return Ok();
+            return NoContent();
         }
         catch (Exception e)
         {
@@ -83,8 +98,8 @@ public class UserController : Controller
         }
     }
 
-    [HttpPost]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     public async Task<IActionResult> CreateUser([FromBody] UserDto? userDto)
@@ -112,7 +127,7 @@ public class UserController : Controller
             if (ModelState.IsValid is false)
                 return BadRequest(ModelState);
 
-            return Ok();
+            return NoContent();
         }
         catch (Exception e)
         {

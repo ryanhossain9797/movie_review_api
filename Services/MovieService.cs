@@ -12,9 +12,9 @@ public class MovieService: IMovieService {
         _movieRepository = movieRepository;
     }
 
-    public async Task<Movie?> GetMovieById(int id)
+    public Task<Movie?> GetMovieById(int id)
     {
-        return await _movieRepository.GetMovieById(id);
+        return _movieRepository.GetMovieById(id);
     }
 
     public async Task<ICollection<Movie>> GetMoviesByIds(ICollection<int> ids)

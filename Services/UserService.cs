@@ -8,16 +8,19 @@ namespace imdb.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IMovieService _movieService;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(
+        IUserRepository userRepository,
+        IMovieService movieService)
     {
         _userRepository = userRepository;
-
+        _movieService = movieService;
     }
 
-    public async Task<User?> GetUserById(int id)
+    public Task<User?> GetUserById(int id)
     {
-        return await _userRepository.GetUserById(id);
+        return _userRepository.GetUserById(id);
     }
 
     public IQueryable<User> GetUsersByIds(ICollection<int> ids)
@@ -53,17 +56,21 @@ public class UserService : IUserService
     {
         var user =
             (await
-                GetUsersByIds(new List<int>(userId))
+            GetUsersByIds(new List<int> { userId })
                 .Include(u => u.FavoritedMovies)
                 .ToListAsync()).FirstOrDefault();
 
+        var movie = await _movieService.GetMovieById(movieId);
+
         if(user is null)
             throw new Exception("User Not Found");
+        if(movie is null)
+            throw new Exception("Movie Not Found");
 
         if(user.FavoritedMovies.Any(ufm => ufm.MovieId == movieId))
             return true;
 
-        user.FavoritedMovies.Add(new() { UserId = userId, MovieId = movieId});
+        user.FavoritedMovies.Add(new() { User = user, Movie = movie });
 
         return await _userRepository.UpdateUser(user);
     }

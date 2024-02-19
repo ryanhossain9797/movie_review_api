@@ -24,6 +24,21 @@ public class MovieController : Controller
         _movieService = movieService;
     }
 
+    [HttpGet("Take/{limit}")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<MovieDto>))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> GetAllMovies(int limit)
+    {
+        var movies = await _movieService.GetMovies().Take(limit).ToListAsync();
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var movieDtos = _mapper.Map<List<MovieDto>>(movies);
+
+        return Ok(movieDtos);
+    }
+
     [HttpGet("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(MovieDto))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -43,8 +58,8 @@ public class MovieController : Controller
         return Ok(movieDto);
     }
 
-    [HttpPost]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     public async Task<IActionResult> CreateMovie([FromBody] MovieDto? movieDto)
@@ -62,7 +77,7 @@ public class MovieController : Controller
             if (ModelState.IsValid is false)
                 return BadRequest(ModelState);
 
-            return Ok();
+            return NoContent();
         }
         catch (Exception e)
         {
