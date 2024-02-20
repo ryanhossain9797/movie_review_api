@@ -26,7 +26,7 @@ public class MovieController : Controller
 
     public class GetAllMoviesQuery
     {
-        public int Limit;
+        public int Limit { get; set; }
     }
 
     [HttpPost("Take")]
@@ -46,7 +46,7 @@ public class MovieController : Controller
 
     public class GetMovieQuery
     {
-        public int MovieId;
+        public int MovieId { get; set; }
     }
 
     [HttpPost("Get")]

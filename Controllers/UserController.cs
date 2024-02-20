@@ -25,13 +25,13 @@ public class UserController : Controller
 
     public class GetAllUsersQuery
     {
-        public int Limit;
+        public int Limit { get; set; }
     }
 
     [HttpPost("Take")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<UserDto>))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetAllUsers([FromBody] GetAllUsersQuery query)
+    public async Task<IActionResult> GetAllUsers(GetAllUsersQuery query)
     {
         var users = await _userService.GetUsers().Include(u => u.FavoritedMovies).Take(query.Limit).ToListAsync();
 
@@ -45,7 +45,7 @@ public class UserController : Controller
 
     public class GetUserQuery
     {
-        public int UserId;
+        public int UserId { get; set; }
     }
 
     [HttpPost("Get")]
@@ -69,7 +69,7 @@ public class UserController : Controller
 
     public class GetFavoriteMoviesOfUserQuery
     {
-        public int UserId;
+        public int UserId { get; set; }
     }
 
     [HttpPost("FavoriteMovies/Get")]
@@ -117,30 +117,15 @@ public class UserController : Controller
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
-    public async Task<IActionResult> CreateUser([FromBody] UserDto? userDto)
+    public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
     {
         try
         {
-            if (userDto is null)
-                ModelState.AddModelError("", "Required data not submitted");
+            var userResult =
+                await MovieReviewApi.Models.User.Construct(_userService, _mapper, userDto);
 
-            var maybeExistingUser =
-                await
-                    _userService
-                    .GetUsers()
-                    .Where(usr => usr.Email == userDto.Email)
-                    .FirstOrDefaultAsync();
-
-            if (maybeExistingUser is not null)
-                ModelState.AddModelError("", "User with email already exists");
-
-            var user = _mapper.Map<User>(userDto);
-
-            if (await _userService.CreateUser(user) is false)
-                ModelState.AddModelError("", "User could not be created");
-
-            if (ModelState.IsValid is false)
-                return BadRequest(ModelState);
+            if (userResult.IsError)
+                return BadRequest(userResult.ErrorValue);
 
             return NoContent();
         }
