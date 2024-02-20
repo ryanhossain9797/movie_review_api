@@ -23,12 +23,17 @@ public class UserController : Controller
         _userService = userService;
     }
 
-    [HttpGet("Take/{limit}")]
+    public class GetAllUsersQuery
+    {
+        public int Limit;
+    }
+
+    [HttpPost("Take")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<UserDto>))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetAllUsers(int limit)
+    public async Task<IActionResult> GetAllUsers([FromBody] GetAllUsersQuery query)
     {
-        var users = await _userService.GetUsers().Include(u => u.FavoritedMovies).Take(limit).ToListAsync();
+        var users = await _userService.GetUsers().Include(u => u.FavoritedMovies).Take(query.Limit).ToListAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -38,13 +43,18 @@ public class UserController : Controller
         return Ok(userDtos);
     }
 
-    [HttpGet("{id}")]
+    public class GetUserQuery
+    {
+        public int UserId;
+    }
+
+    [HttpPost("Get")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserDto))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetUser(int id)
+    public async Task<IActionResult> GetUser([FromBody] GetUserQuery query)
     {
-        var user = await _userService.GetUserById(id);
+        var user = await _userService.GetUserById(query.UserId);
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -57,15 +67,20 @@ public class UserController : Controller
         return Ok(userDto);
     }
 
-    [HttpGet("{userId}/favorite-movies")]
+    public class GetFavoriteMoviesOfUserQuery
+    {
+        public int UserId;
+    }
+
+    [HttpPost("FavoriteMovies/Get")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FavoriteMoviesOfUserDto))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetFavoriteMoviesOfUser(int userId)
+    public async Task<IActionResult> GetFavoriteMoviesOfUser([FromBody] GetFavoriteMoviesOfUserQuery query)
     {
-        if (await _userService.GetUserById(userId) is null)
+        if (await _userService.GetUserById(query.UserId) is null)
             return NotFound();
 
-        var movies = await _userService.GetFavoriteMoviesOfUser(userId).ToListAsync();
+        var movies = await _userService.GetFavoriteMoviesOfUser(query.UserId).ToListAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -73,21 +88,21 @@ public class UserController : Controller
         var data =
             new FavoriteMoviesOfUserDto
             {
-                UserId = userId,
+                UserId = query.UserId,
                 FavoriteMovies = _mapper.Map<List<MovieDto>>(movies)
             };
 
         return Ok(data);
     }
 
-    [HttpPut("{userId}/favorite-movies/add")]
+    [HttpPost("FavoriteMovies/Add")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(String))]
-    public async Task<IActionResult> FavoriteMovie(int userId, int movieId)
+    public async Task<IActionResult> FavoriteMovie([FromBody] UserFavoriteMovieDto userFavoriteMovie)
     {
         try
         {
-            if (await _userService.FavoriteMovie(userId, movieId) is false)
+            if (await _userService.FavoriteMovie(userFavoriteMovie.UserId, userFavoriteMovie.MovieId) is false)
                 return BadRequest();
 
             return NoContent();
@@ -98,7 +113,7 @@ public class UserController : Controller
         }
     }
 
-    [HttpPut]
+    [HttpPost("Create")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]

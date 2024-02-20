@@ -24,12 +24,17 @@ public class MovieController : Controller
         _movieService = movieService;
     }
 
-    [HttpGet("Take/{limit}")]
+    public class GetAllMoviesQuery
+    {
+        public int Limit;
+    }
+
+    [HttpPost("Take")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<MovieDto>))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetAllMovies(int limit)
+    public async Task<IActionResult> GetAllMovies([FromBody] GetAllMoviesQuery query)
     {
-        var movies = await _movieService.GetMovies().Take(limit).ToListAsync();
+        var movies = await _movieService.GetMovies().Take(query.Limit).ToListAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -39,13 +44,18 @@ public class MovieController : Controller
         return Ok(movieDtos);
     }
 
-    [HttpGet("{id}")]
+    public class GetMovieQuery
+    {
+        public int MovieId;
+    }
+
+    [HttpPost("Get")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(MovieDto))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetMovie(int id)
+    public async Task<IActionResult> GetMovie([FromBody] GetMovieQuery query)
     {
-        var movie = await _movieService.GetMovieById(id);
+        var movie = await _movieService.GetMovieById(query.MovieId);
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -58,7 +68,7 @@ public class MovieController : Controller
         return Ok(movieDto);
     }
 
-    [HttpPut]
+    [HttpPost("Create")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
