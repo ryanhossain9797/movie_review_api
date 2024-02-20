@@ -1,4 +1,4 @@
-namespace imdb.Dto;
+namespace MovieReviewApi.Dto;
 
 public class UserDto {
     public int Id { get; set; }

@@ -1,6 +1,6 @@
-using imdb.Models;
+using MovieReviewApi.Models;
 
-namespace imdb.Services;
+namespace MovieReviewApi.Services;
 
 public interface IMovieService {
     public Task<Movie?> GetMovieById(int id);

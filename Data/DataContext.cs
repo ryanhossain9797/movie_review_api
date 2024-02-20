@@ -1,7 +1,7 @@
-using imdb.Models;
+using MovieReviewApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace imdb.Data;
+namespace MovieReviewApi.Data;
 public class DataContext : DbContext
 {
     public DataContext(DbContextOptions options) : base(options)

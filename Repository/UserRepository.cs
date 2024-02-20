@@ -1,8 +1,8 @@
-using imdb.Data;
-using imdb.Models;
+using MovieReviewApi.Data;
+using MovieReviewApi.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace imdb.Repository;
+namespace MovieReviewApi.Repository;
 
 public class UserRepository : IUserRepository
 {

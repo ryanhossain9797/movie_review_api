@@ -1,9 +1,9 @@
 using AutoMapper;
-using imdb.Models;
-using imdb.Repository;
+using MovieReviewApi.Models;
+using MovieReviewApi.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace imdb.Services;
+namespace MovieReviewApi.Services;
 
 public class UserService : IUserService
 {

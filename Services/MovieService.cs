@@ -1,8 +1,8 @@
-using imdb.Models;
-using imdb.Repository;
+using MovieReviewApi.Models;
+using MovieReviewApi.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace imdb.Services;
+namespace MovieReviewApi.Services;
 
 public class MovieService: IMovieService {
     private readonly IMovieRepository _movieRepository;

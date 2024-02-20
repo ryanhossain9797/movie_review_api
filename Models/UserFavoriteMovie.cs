@@ -1,4 +1,4 @@
-namespace imdb.Models;
+namespace MovieReviewApi.Models;
 
 public class UserFavoriteMovie
 {

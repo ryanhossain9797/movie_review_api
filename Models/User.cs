@@ -1,6 +1,6 @@
-using imdb.Dto;
+using MovieReviewApi.Dto;
 
-namespace imdb.Models;
+namespace MovieReviewApi.Models;
 
 public class User
 {

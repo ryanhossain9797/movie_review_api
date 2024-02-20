@@ -1,13 +1,13 @@
 using System.Net;
 using AutoMapper;
-using imdb.Dto;
+using MovieReviewApi.Dto;
 using Microsoft.AspNetCore.Mvc;
-using imdb.Repository;
-using imdb.Models;
-using imdb.Services;
+using MovieReviewApi.Repository;
+using MovieReviewApi.Models;
+using MovieReviewApi.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace imdb.Controllers;
+namespace MovieReviewApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

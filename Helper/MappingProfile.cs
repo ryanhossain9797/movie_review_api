@@ -1,6 +1,6 @@
 using AutoMapper;
-using imdb.Dto;
-using imdb.Models;
+using MovieReviewApi.Dto;
+using MovieReviewApi.Models;
 
 public class MappingProfile : Profile {
     public MappingProfile()

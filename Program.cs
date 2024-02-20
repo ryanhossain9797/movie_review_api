@@ -1,7 +1,7 @@
-using imdb;
-using imdb.Data;
-using imdb.Repository;
-using imdb.Services;
+using MovieReviewApi;
+using MovieReviewApi.Data;
+using MovieReviewApi.Repository;
+using MovieReviewApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

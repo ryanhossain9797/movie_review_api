@@ -1,6 +1,6 @@
-namespace imdb.Repository;
+namespace MovieReviewApi.Repository;
 
-using imdb.Models;
+using MovieReviewApi.Models;
 
 public interface IUserRepository {
     Task<User?> GetUserById(int id);

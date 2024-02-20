@@ -1,6 +1,6 @@
-using imdb.Models;
+using MovieReviewApi.Models;
 
-namespace imdb.Dto;
+namespace MovieReviewApi.Dto;
 
 public class FavoriteMoviesOfUserDto
 {

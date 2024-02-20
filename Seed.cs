@@ -1,7 +1,7 @@
-using imdb.Data;
-using imdb.Models;
+using MovieReviewApi.Data;
+using MovieReviewApi.Models;
 
-namespace imdb
+namespace MovieReviewApi
 {
     public class Seed
     {
