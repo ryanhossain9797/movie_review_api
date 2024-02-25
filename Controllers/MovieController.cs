@@ -76,16 +76,11 @@ public class MovieController : Controller
     {
         try
         {
-            if (movieDto is null)
-                ModelState.AddModelError("", "Required data not submitted");
+            var movieResult =
+                await MovieReviewApi.Models.Movie.Construct(_movieService, _mapper, movieDto);
 
-            var movie = _mapper.Map<Movie>(movieDto);
-
-            if (await _movieService.CreateMovie(movie) is false)
-                ModelState.AddModelError("", "Movie could not be created");
-
-            if (ModelState.IsValid is false)
-                return BadRequest(ModelState);
+            if (movieResult.IsError)
+                return BadRequest(movieResult.ErrorValue);
 
             return NoContent();
         }
